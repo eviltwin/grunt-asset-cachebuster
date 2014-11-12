@@ -24,9 +24,10 @@ function bust(buster, url) {
 }
 
 function replace(replacer, options) {
-  return function _replace(match, p1) {
+  replacer = interpolate(replacer, { url: options.replacer });
+  return function _replace(match, url) {
     if (!options.ignore.some(function (ignore) { return match.indexOf(ignore) > -1; })) {
-      return interpolate(replacer, { p1: p1, buster: bust(options.buster, p1) });
+      return interpolate(replacer, { url: url, buster: bust(options.buster, url) });
     } else {
       return match;
     }
@@ -35,18 +36,18 @@ function replace(replacer, options) {
 
 function cacheBustCss(css, options) {
   var img = /url\(['"]?(?!data:)([^)'"?]+)['"]?(?:\?v=[0-9]+)*\)/gi;
-  return css.replace(img, replace('url({p1}?v={buster})', options));
+  return css.replace(img, replace('url({url})', options));
 }
 
 function cacheBustHtml(html, options) {
   var css = /href="(.+\.css)"/gi;
-  html = html.replace(css, replace('href="{p1}?v={buster}"', options));
+  html = html.replace(css, replace('href="{url}"', options));
 
   var js = /src="(.+\.js)"/gi;
-  html = html.replace(js, replace('src="{p1}?v={buster}"', options));
+  html = html.replace(js, replace('src="{url}"', options));
 
   var images = /src="(.+\.(?:png|gif|jpg|jpeg))"/gi;
-  html = html.replace(images, replace('src="{p1}?v={buster}"', options));
+  html = html.replace(images, replace('src="{url}"', options));
   return html;
 }
 
@@ -72,6 +73,7 @@ module.exports = function(grunt) {
     // Merge task-specific and/or target-specific options with these defaults.
     var options = this.options({
       buster: '123456',
+      replacer: '{url}?v={buster}',
       ignore: [],
       htmlExtension: 'html'
     });

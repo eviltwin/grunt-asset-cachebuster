@@ -70,6 +70,15 @@ module.exports = function(grunt) {
           'tmp/ignore_option.css': ['test/fixtures/images.css'],
           'tmp/ignore_option.html': ['test/fixtures/index.html'],
         }
+      },
+      replacer_string_option: {
+        options: {
+          replacer: '{url}/cb-{buster}'
+        },
+        files: {
+          'tmp/replacer_string_option.css': ['test/fixtures/images.css'],
+          'tmp/replacer_string_option.html': ['test/fixtures/index.html'],
+        }
       }
     },
 
