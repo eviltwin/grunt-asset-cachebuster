@@ -19,35 +19,35 @@ function isHtml(filepath, extension) {
   return htmlTest.test(filepath);
 }
 
-function bust(buster, url) {
-  return (typeof buster === 'function') ? buster(url) : buster;
+function bust(buster, url, file) {
+  return (typeof buster === 'function') ? buster(url, file) : buster;
 }
 
-function replace(replacer, options) {
+function replace(replacer, file, options) {
   replacer = interpolate(replacer, { url: options.replacer });
   return function _replace(match, url) {
     if (!options.ignore.some(function (ignore) { return match.indexOf(ignore) > -1; })) {
-      return interpolate(replacer, { url: url, buster: bust(options.buster, url) });
+      return interpolate(replacer, { url: url, buster: bust(options.buster, url, file) });
     } else {
       return match;
     }
   };
 }
 
-function cacheBustCss(css, options) {
+function cacheBustCss(css, dest, options) {
   var img = /url\(['"]?(?!data:)([^)'"?]+)['"]?(?:\?v=[0-9]+)*\)/gi;
-  return css.replace(img, replace('url({url})', options));
+  return css.replace(img, replace('url({url})', dest, options));
 }
 
-function cacheBustHtml(html, options) {
+function cacheBustHtml(html, dest, options) {
   var css = /href="(.+\.css)"/gi;
-  html = html.replace(css, replace('href="{url}"', options));
+  html = html.replace(css, replace('href="{url}"', dest, options));
 
   var js = /src="(.+\.js)"/gi;
-  html = html.replace(js, replace('src="{url}"', options));
+  html = html.replace(js, replace('src="{url}"', dest, options));
 
   var images = /src="(.+\.(?:png|gif|jpg|jpeg))"/gi;
-  html = html.replace(images, replace('src="{url}"', options));
+  html = html.replace(images, replace('src="{url}"', dest, options));
   return html;
 }
 
@@ -56,12 +56,12 @@ module.exports = function(grunt) {
 
   function cacheBust(src, files, options) {
     if (isCss(files.dest)) {
-      grunt.file.write(files.dest, cacheBustCss(src, options));
+      grunt.file.write(files.dest, cacheBustCss(src, files.dest, options));
     }
     else if (isHtml(files.dest, options.htmlExtension)) {
-      grunt.file.write(files.dest, cacheBustHtml(src, options));
+      grunt.file.write(files.dest, cacheBustHtml(src, files.dest, options));
     } else {
-      grunt.file.write(files.dest, cacheBustHtml(src, options));
+      grunt.file.write(files.dest, cacheBustHtml(src, files.dest, options));
     }
     grunt.log.writeln('Assets in "' + files.dest + '" cachebusted.');
   }

@@ -46,7 +46,10 @@ Type: `String | Function`
 Default value: `'123456'`
 
 A string value that is used to append to the url of your assets.
-If it is a function, the function is called with the url and the extension of a file to cachebust as parameters, and it must return a string.
+
+If it is a function, the function is called with the url and the destination
+file to cachebust as parameters, and it must return a string.
+
 Generally, you want this to be a timestamp or the version number of your app.
 
 #### options.replacer

@@ -58,6 +58,21 @@ module.exports = function(grunt) {
           'tmp/buster_function_option.html': ['test/fixtures/index.html'],
         }
       },
+      buster_function_option_file_param: {
+        options: {
+          buster: function (url, file) {
+            if (file === 'tmp/buster_function_option_file_param.html') {
+              return 'fish';
+            } else {
+              return 'squirrel';
+            }
+          }
+        },
+        files: {
+          'tmp/buster_function_option_file_param.css': ['test/fixtures/images.css'],
+          'tmp/buster_function_option_file_param.html': ['test/fixtures/index.html'],
+        }
+      },
       ignore_option: {
         options: {
           buster: '0.2.0',
